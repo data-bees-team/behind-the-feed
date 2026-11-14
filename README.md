@@ -1,11 +1,11 @@
-# Beyond the Feed 🐝
+# Behind the Feed 🐝
 ### Discover More — A Diversity-Aware News Recommendation System
 
 **Team Data Bees | Behind the Feed Data Challenge 2026 — Phase 2**
 
-Beyond the Feed is an interactive news recommendation application designed to help readers **discover relevant stories without seeing only more of the same**. It combines personal interests and semantic similarity with feedback-driven adaptation and diversity-aware ranking across topics, countries, and publishers.
+Behind the Feed is an interactive news recommendation application designed to help readers **discover relevant stories without seeing only more of the same**. It combines personal interests and semantic similarity with feedback-driven adaptation and diversity-aware ranking across topics, countries, and publishers.
 
-**[GitHub Repository](https://github.com/data-bees-team/beyond-the-feed)** · **[Live Demo](https://beyondthefeed-databees.streamlit.app/)**
+**[GitHub Repository](https://github.com/data-bees-team/behind-the-feed)** · **[Live Demo](https://behindthefeed-databees.streamlit.app/)**
 ## The problem
 
 A news feed optimized only for relevance can repeatedly recommend similar stories or concentrate exposure among familiar sources and regions. This limits opportunities to encounter relevant news from different perspectives and places.
@@ -111,7 +111,7 @@ These experiments demonstrate system behavior on a fixed dataset and simulated i
 ## Repository guide
 
 ```text
-beyond-the-feed/
+behind-the-feed/
 ├── Home.py                         # Application entry point
 ├── pages/                          # Feed, insights, and comparison pages
 ├── components/                     # Authentication and article UI components
@@ -133,8 +133,8 @@ The current hybrid feed uses modules including `hybrid_pipeline.py`, `nlp_profil
 **Prerequisites:** Git and a compatible Python environment (the project has been developed with Python 3.11).
 
 ```bash
-git clone https://github.com/data-bees-team/beyond-the-feed.git
-cd beyond-the-feed
+git clone https://github.com/data-bees-team/behind-the-feed.git
+cd behind-the-feed
 python3 -m venv .venv
 source .venv/bin/activate          # macOS / Linux
 python -m pip install -r requirements.txt
