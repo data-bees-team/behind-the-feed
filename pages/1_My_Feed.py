@@ -137,23 +137,12 @@ with st.sidebar:
 
     # User Feedback Insights
     st.markdown("### Adaptive Learning Profile")
-    st.caption("Shared preferences learned from your interactions.")
+    st.caption("Your article feedback activity.")
 
     col_m1, col_m2, col_m3 = st.columns(3)
     col_m1.metric("Interactions", user_pref_profile.total_feedback_count)
     col_m2.metric("👍 Likes", user_pref_profile.interested_count)
     col_m3.metric("👎 Dislikes", user_pref_profile.not_interested_count)
-
-    top_pos_topics = user_pref_profile.get_top_preferred_topics(3)
-    top_neg_topics = user_pref_profile.get_dispreferred_topics(3)
-
-    if top_pos_topics:
-        st.markdown("**Top Liked Topics:**")
-        st.markdown(" ".join(f"`{t[0]}`" for t in top_pos_topics))
-
-    if top_neg_topics:
-        st.markdown("**Downvoted Topics:**")
-        st.markdown(" ".join(f"`{t[0]}`" for t in top_neg_topics))
 
     if user_pref_profile.total_feedback_count == 0:
         st.caption("No feedback recorded yet. Rate articles below to teach the system your preferences.")

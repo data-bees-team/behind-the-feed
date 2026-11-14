@@ -18,7 +18,7 @@ def recommend_hybrid_feed(
     topic_description_embeddings,
     top_k=10,
     topic_weight=0.5,
-    lambda_param=0.7,
+    lambda_param=0.60,
     seen_ids = None,
     user_vector = None,
 ):
@@ -126,8 +126,7 @@ def recommend_hybrid_feed(
 
     candidates = deduplicate_candidates(candidates)
 
-    # 5. Remove duplicate headlines
-    candidates = deduplicate_candidates(candidates)
+   
     
     # Exclude previously recommended articles before reranking
     if seen_ids:
