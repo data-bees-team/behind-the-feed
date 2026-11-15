@@ -3,167 +3,244 @@
 
 **Team Data Bees | Behind the Feed Data Challenge 2026 — Phase 2**
 
-Behind the Feed is an interactive news recommendation application designed to help readers **discover relevant stories without seeing only more of the same**. It combines personal interests and semantic similarity with feedback-driven adaptation and diversity-aware ranking across topics, countries, and publishers.
+Behind the Feed is an interactive news recommendation application designed to help readers discover relevant stories without seeing only more of the same. It combines personal interests, semantic similarity, feedback-driven personalization, and diversity-aware ranking across topics, countries, and publishers.
 
-**[GitHub Repository](https://github.com/data-bees-team/behind-the-feed)** · **[Live Demo](https://behindthefeed-databees.streamlit.app/)**
-## The problem
+**[GitHub Repository](https://github.com/data-bees-team/behind-the-feed) | [Live Demo](https://behindthefeed-databees.streamlit.app/)**
 
-A news feed optimized only for relevance can repeatedly recommend similar stories or concentrate exposure among familiar sources and regions. This limits opportunities to encounter relevant news from different perspectives and places.
+---
 
-Our goal is to balance two needs: **recommend news a reader cares about** and **make room for relevant discovery**.
+## The Problem
 
-## What we built
+A news feed optimized only for relevance can repeatedly recommend similar stories or concentrate exposure among familiar sources and regions. This limits opportunities to encounter relevant news from different topics and places.
 
-A multi-user Streamlit application with:
+Our goal is to balance two needs: **recommend news a reader cares about while making room for relevant discovery.**
 
-- **Guest, Sign Up and Login:** explore the application or create an account with saved preferences.
-- **My Feed:** personalized news recommendations with article-level **Interested / Not Interested** feedback and a **Load More** experience.
-- **Discover:** a discovery-oriented feed using the same recommendation engine with stronger exploration.
-- **Recommendation Insights:** visual summaries of the user's recommendations and interactions.
-- **Compare Recommenders:** a side-by-side comparison of the topic-based baseline and diversity-aware hybrid feed for the current user.
+## What We Built
+
+A multi-user Streamlit application with five main features:
+
+1. **Guest Access, Sign Up & Login:** Explore the application or create an account with saved preferences.
+2. **My Feed:** Personalized news recommendations with Interested / Not Interested feedback and a Load More experience.
+3. **Discover:** A discovery-oriented feed using the same recommendation engine with stronger exploration.
+4. **Recommendation Insights:** Visual summaries of users' recommendations, selected interests, and interactions.
+5. **Compare Recommenders:** Side-by-side comparison of the topic-based baseline and diversity-aware hybrid recommendations for the current user.
+
+**Usage Note:** After selecting interests, the first personalized feed may take approximately 6–10 seconds to load. Subsequent interactions are generally faster.
 
 ## Dataset
 
 | Property | Value |
-|---|---:|
-| News articles | **15,395** |
-| Countries represented | **185** |
-| Continents represented | **6** |
-| Source | **Preprocessed GDELT news data** |
+|---|---|
+| News articles | 15,395 |
+| Countries represented | 185 |
+| Continents represented | 6 |
+| Publisher domains | 2,117 |
+| Source | Preprocessed GDELT news data |
 
-The application uses a **historical, cleaned news dataset**, not a continuously updated live news feed. News articles can have multiple topic labels.
+The application uses a historical, cleaned news dataset rather than a continuously updated live news feed. Individual articles may have multiple topic labels.
 
-## How recommendations work
+## How Recommendations Work
 
 ```text
 User-selected interests + past article feedback
-                       │
-                       ▼
+                       |
+                       v
          Topic relevance scoring
-                       │
-                       ├──────────► Baseline recommendations
-                       │
-                       ▼
-       Semantic article matching
-      (BGE title text embeddings)
-                       │
-                       ▼
+                       |
+                       +------> Baseline recommendations
+                       |
+                       v
+        Semantic article matching
+       (BGE title text embeddings)
+                       |
+                       v
     Hybrid candidate retrieval + scoring
-                       │
-                       ▼
+                       |
+                       v
        Unified diversity-aware reranking
-    (semantic, geographic, publisher MMR)
-                       │
-                       ▼
-       Personalized feed / Discover
-                       │
-                       ▼
-         Interested / Not Interested
-                       │
-                       └──► Updated user preferences
+      (semantic, geographic, publisher MMR)
+                       |
+                       v
+          Personalized Feed / Discover
+                       |
+                       v
+          Interested / Not Interested
+                       |
+                       +------> Updated user preferences
 ```
 
-### 1. Topic-based baseline
+### 1. Topic-Based Baseline
 
-The baseline ranks articles using the reader's selected topic interests. It provides a simple, interpretable reference point for evaluating the hybrid system. Because articles may have several topics, an article that covers a selected topic **alongside other topics** can receive a lower topic score than a more narrowly focused article.
+The baseline ranks articles using readers' selected topic interests. It provides an interpretable reference point for evaluating the hybrid system.
 
-### 2. Semantic retrieval
+Because articles may have multiple topics, an article covering a selected interest alongside other topics can receive a lower baseline score than a more narrowly focused article.
 
-The hybrid system uses **BAAI/bge-base-en-v1.5** embeddings of article titles to identify semantically related news, including stories that may not share an exact topic label with the reader's selected interests.
+### 2. Semantic Retrieval
 
-### 3. Feedback-based personalization
+The hybrid system uses **BAAI/bge-base-en-v1.5** embeddings of article titles to identify semantically related news, including stories that may not share an exact topic label with readers' selected interests.
 
-Readers can mark articles **Interested** or **Not Interested**. These signals adjust future recommendations while allowing exploration; a single dislike is not treated as a permanent ban on a topic.
+### 3. Feedback-Based Personalization
 
-### 4. Diversity-aware reranking
+Readers can mark articles as **Interested** or **Not Interested**.
 
-**Maximal Marginal Relevance (MMR)** balances relevance against repetition. The unified reranker considers semantic redundancy, country representation, and publisher overlap to help produce a more varied recommendation slate.
+These signals adjust subsequent recommendation scores without retraining the underlying language model. A single dislike does not permanently exclude an entire topic.
+
+### 4. Diversity-Aware Reranking
+
+The system uses **Maximal Marginal Relevance (MMR)** to balance relevance against repetition.
+
+Its unified reranking process considers:
+
+- Semantic redundancy between recommended articles.
+- Geographic overlap across countries and continents.
+- Publisher repetition within the recommendation slate.
+
+This encourages broader information exposure without enforcing strict diversity quotas.
 
 ### 5. Discovery
 
-The **Discover** experience uses the same core engine but places more emphasis on exploration. It is intended to surface relevant stories beyond the reader's most obvious matches.
+The Discover experience uses the same core recommendation engine with a stronger emphasis on exploration. It aims to surface relevant stories beyond readers' most obvious matches.
 
 ## Evaluation
 
-We evaluated the recommendation approach using baseline comparisons, ablations, feedback experiments, and diversity/relevance trade-off tests. The repository includes evaluation scripts and outputs under `evaluation/` and `reports/`.
+We evaluated the recommendation approach using baseline comparisons, ablation studies, simulated feedback, and relevance–diversity trade-off experiments.
 
-| Experiment | What it examines |
+Evaluation scripts and outputs are organized under `evaluation/` and `reports/`.
+
+| Experiment | What It Examines |
 |---|---|
-| Baseline vs. hybrid | Changes in relevance and topic, geographic, and publisher coverage |
-| Geographic ablation | Effect of geographic diversity reranking |
-| Semantic ablation | Contribution of semantic retrieval and ranking |
-| MMR lambda sweep | Trade-off between relevance and diversity |
-| Feedback adaptation | How recommendations respond to simulated positive and negative feedback |
-| 30-round filter-bubble simulation | Whether diversity is maintained under repeated simulated preferences |
+| Baseline vs. Hybrid | Relevance and topic, geographic, and publisher coverage |
+| Geographic Ablation | Contribution of geographic-aware reranking |
+| Semantic Ablation | Contribution of semantic retrieval and ranking |
+| MMR Lambda Sweep | Relevance–diversity trade-offs |
+| Feedback Adaptation | Responses to simulated positive and negative feedback |
+| 30-Round Simulation | Diversity under repeated simulated interactions |
 
-**Selected experimental observations** (specific offline test configurations, not universal guarantees):
+### Selected Experimental Results
 
-- In a geographic ablation for a Technology profile, a top-10 hybrid slate represented **10 countries**, compared with **6** without geographic reranking.
-- In a 30-round synthetic-feedback experiment, the hybrid configuration maintained **10 countries and 9 topics** in the evaluated top-10 slates; the baseline averaged **6.13 countries and 4.87 topics**.
-- The MMR lambda experiment showed the expected trade-off: greater emphasis on relevance can reduce semantic diversity.
+**1. Geographic Coverage**
 
-These experiments demonstrate system behavior on a fixed dataset and simulated interactions. They **do not establish causal effects on reader satisfaction** or measure long-term outcomes with real users.
+In a geographic ablation using a Technology interest profile, a top-10 slate represented **10 countries with geographic reranking**, compared with **6 countries without it**.
 
-## Technology
+**2. Thirty-Round Simulated Feedback Experiment**
 
-**Python · Streamlit · pandas · NumPy · Sentence Transformers · BGE embeddings · SQLite · Maximal Marginal Relevance (MMR) · Git/GitHub**
+Average results per 10-article recommendation slate:
 
-## Repository guide
+| Metric | Topic Baseline | Hybrid |
+|---|---:|---:|
+| Countries | 6.13 | 10.00 |
+| Publishers | 8.93 | 10.00 |
+| Distinct topic labels | 4.87 | 9.00 |
+| Semantic diversity | 0.614 | 0.521 |
 
-```text
-behind-the-feed/
-├── Home.py                         # Application entry point
-├── pages/                          # Feed, insights, and comparison pages
-├── components/                     # Authentication and article UI components
-├── recommender/                    # Baseline, hybrid retrieval, personalization, MMR
-├── utils/                          # Data, semantic assets, accounts, and feedback
-├── evaluation/                     # Offline experiments and ablation scripts
-├── reports/                        # Evaluation results and visualizations
-├── tests/                          # Automated tests
-├── data/                           # Dataset and model assets (where available)
-├── styles/                         # Application styling
-├── requirements.txt
-└── README.md
-```
+The hybrid system achieved broader geographic, publisher, and topic-label coverage in this experiment. The baseline showed higher semantic diversity, illustrating that improvements across different diversity dimensions do not always occur together.
 
-The current hybrid feed uses modules including `hybrid_pipeline.py`, `nlp_profile.py`, and `unified_reranker.py`. Other recommender modules preserve earlier components and experiments; they should not all be interpreted as separate active feed pipelines.
+**3. Relevance–Diversity Trade-Off**
 
-## Run locally
+The MMR lambda experiment demonstrated an observed trade-off: increasing the emphasis on relevance generally improved the internal relevance score while reducing semantic diversity.
 
-**Prerequisites:** Git and a compatible Python environment (the project has been developed with Python 3.11).
+**4. Feedback Responsiveness**
 
-```bash
-git clone https://github.com/data-bees-team/behind-the-feed.git
-cd behind-the-feed
-python3 -m venv .venv
-source .venv/bin/activate          # macOS / Linux
-python -m pip install -r requirements.txt
-streamlit run Home.py
-```
+In a controlled Technology experiment, simulated feedback changed the recommendation slate: 7 of the original top-10 articles were replaced, the disliked article dropped out of the top 10, and the liked article remained at rank 1.
 
-Open **http://localhost:8501**. On Windows, activate the virtual environment using `.venv\Scripts\activate` instead.
+These results describe system behavior under controlled offline configurations. They do not establish causal effects on reader satisfaction or long-term engagement.
 
-**Data note:** Local execution requires the dataset and precomputed semantic embedding assets expected by the project's loaders. If those assets are not included in the repository, they must be provided separately. The live Streamlit deployment is the easiest way for judges to try the completed experience.
+### Automated Testing
 
-To run automated tests:
+**50 tests passed in 6.90 seconds** in the recorded verification run, covering the hybrid recommendation pipeline, geographic and publisher diversity, feedback personalization, and user management.
+
+To run the tests:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-## Scope and limitations
+## Technology
 
-- Country and publisher diversity are **exposure indicators**, not direct measurements of viewpoint, fairness, or political balance.
-- The system works with a fixed historical news corpus rather than live ingestion.
-- A diverse top-10 slate does not guarantee every country, publisher, or topic will be represented.
-- Simulated feedback experiments assess ranking responsiveness; real-user satisfaction would require a separate user study.
+**Languages & Frameworks:** Python, Streamlit
 
-## Team
+**Data Processing:** pandas, NumPy, SQLite
 
-Built by **Data Bees** for the **Behind the Feed Data Challenge 2026**.
+**Machine Learning & Recommendation:** Sentence Transformers, BGE Embeddings, Cosine Similarity, Maximal Marginal Relevance (MMR)
 
-The project combines team contributions in geographic diversity, publisher diversity, semantic recommendation, user personalization, application integration, and evaluation.
+**Development Tools:** Git, GitHub
 
----
+## Repository Guide
 
-**Our aim:** Make news recommendations personally useful **and** open the door to broader discovery.
+```text
+behind-the-feed/
+├── Home.py                 # Application entry point
+├── pages/                  # Feed, insights, comparison pages
+├── components/             # Authentication and article UI
+├── recommender/            # Recommendation algorithms
+├── utils/                  # Data, accounts, and feedback
+├── evaluation/             # Offline experiments
+├── reports/                # Evaluation outputs and figures
+├── tests/                  # Automated tests
+├── data/                   # Dataset and embedding assets
+├── styles/                 # Application styling
+├── requirements.txt
+└── README.md
+```
+
+The active hybrid recommendation pipeline uses modules including `hybrid_pipeline.py`, `nlp_profile.py`, and `unified_reranker.py`.
+
+Other recommender modules preserve earlier components and experiments and should not all be interpreted as separate active feed pipelines.
+
+## Run Locally
+
+**Prerequisites:** Git and a compatible Python environment. The project was developed using Python 3.11.
+
+```bash
+git clone https://github.com/data-bees-team/behind-the-feed.git
+cd behind-the-feed
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install -r requirements.txt
+streamlit run Home.py
+```
+
+Open **http://localhost:8501** in your browser.
+
+On Windows, activate the virtual environment using:
+
+```bash
+.venv\Scripts\activate
+```
+
+**Data Note:** Local execution requires the dataset and precomputed semantic embedding assets expected by the project's loaders. If these assets are not included in the repository, they must be provided separately.
+
+The **[Live Demo](https://behindthefeed-databees.streamlit.app/)** is the easiest way for judges to explore the completed application.
+
+## Scope & Limitations
+
+- **Historical Data:** The prototype uses a fixed historical news dataset rather than live news ingestion.
+- **Diversity Measurement:** Geographic, publisher, and topic coverage are indicators of information exposure, not direct measurements of editorial viewpoints or algorithmic fairness.
+- **User Evaluation:** Controlled simulations demonstrate ranking behavior, but real-user studies are needed to assess satisfaction and long-term engagement.
+- **Relevance–Diversity Balance:** Improving geographic and topic coverage does not guarantee higher semantic diversity or better recommendations for every reader.
+
+## References
+
+[1] K. Leetaru and P. A. Schrodt, “GDELT: Global Data on Events, Location, and Tone, 1979–2012,” *ISA Annual Convention*, 2013. [GDELT Data](https://www.gdeltproject.org/data.html#rawdatafiles).
+
+[2] J. Carbonell and J. Goldstein, “The Use of MMR, Diversity-Based Reranking for Reordering Documents,” in *Proc. ACM SIGIR*, 1998, pp. 335–336.
+
+[3] S. Xiao *et al.*, “C-Pack: Packaged Resources to Advance General English Embedding,” 2023. Model: [BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5).
+
+[4] P. Castells, N. J. Hurley, and S. Vargas, “Novelty and Diversity in Recommender Systems,” in *Recommender Systems Handbook*, Springer, 2015, pp. 881–918.
+
+## Team Data Bees 🐝
+
+**Jakia Nowshin:** Semantic Embeddings, Hybrid Ranking & Evaluation
+
+**Shahida Batool:** Geographic Diversity & Adaptive Personalization
+
+**Surayia Rahman:** Publisher Variety, User Security & Recommendation Analysis
+
+**Shared Contributions:** Application Design, Documentation, Testing & Final Improvements.
+
+Built by **Team Data Bees** for the **Behind the Feed Data Challenge 2026 — Phase 2**.
+
+*Our aim: Make news recommendations personally useful while opening the door to broader discovery.*
